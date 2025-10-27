@@ -30,7 +30,11 @@ public class Tour {
 
     @ManyToOne
     @JoinColumn(name = "warehouse_id")
+<<<<<<< HEAD
     private Warehouse warehouse;
+=======
+    private Warehouses warehouses;
+>>>>>>> b28edf7 (LIV-25 CRUD de Tour)
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
     @OrderColumn(name = "delivery_order")
