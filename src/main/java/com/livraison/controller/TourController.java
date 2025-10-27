@@ -1,9 +1,5 @@
 package com.livraison.controller;
 
-<<<<<<< HEAD
-public class TourController {
-
-=======
 import com.livraison.dto.TourDTO;
 import com.livraison.service.TourService;
 import org.springframework.http.ResponseEntity;
