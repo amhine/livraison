@@ -1,9 +1,6 @@
 package com.livraison.service;
 
-<<<<<<< HEAD
-public class TourServiceImpl {
 
-=======
 import com.livraison.dto.TourDTO;
 import com.livraison.entity.*;
 import com.livraison.mapper.TourMapper;
@@ -79,5 +76,4 @@ public class TourServiceImpl implements TourService {
     public void delete(Long id) {
         tourRepository.deleteById(id);
     }
->>>>>>> b28edf7 (LIV-25 CRUD de Tour)
 }

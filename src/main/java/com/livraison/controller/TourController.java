@@ -1,9 +1,5 @@
 package com.livraison.controller;
 
-<<<<<<< HEAD
-public class TourController {
-
-=======
 import com.livraison.dto.TourDTO;
 import com.livraison.service.TourService;
 import org.springframework.http.ResponseEntity;
@@ -50,5 +46,4 @@ public class TourController {
         tourService.delete(id);
         return ResponseEntity.noContent().build();
     }
->>>>>>> b28edf7 (LIV-25 CRUD de Tour)
 }
