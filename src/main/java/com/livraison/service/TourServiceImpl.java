@@ -1,17 +1,14 @@
 package com.livraison.service;
 
-
 import com.livraison.dto.TourDTO;
 import com.livraison.entity.*;
 import com.livraison.mapper.TourMapper;
 import com.livraison.repository.*;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service
 public class TourServiceImpl implements TourService {
 
     private final TourRepository tourRepository;

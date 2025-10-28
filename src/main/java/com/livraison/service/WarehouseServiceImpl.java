@@ -3,11 +3,10 @@ package com.livraison.service;
 import com.livraison.dto.WarehouseDTO;
 import com.livraison.entity.Warehouses;
 import com.livraison.repository.WarehouseRepository;
-import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+
 public class WarehouseServiceImpl implements WarehouseService {
 
     private final WarehouseRepository warehouseRepository;
