@@ -46,5 +46,4 @@ public class TourController {
         tourService.delete(id);
         return ResponseEntity.noContent().build();
     }
->>>>>>> b28edf7 (LIV-25 CRUD de Tour)
 }
