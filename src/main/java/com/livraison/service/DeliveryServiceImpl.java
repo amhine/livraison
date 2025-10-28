@@ -2,8 +2,11 @@ package com.livraison.service;
 
 import com.livraison.dto.DeliveryDTO;
 import com.livraison.entity.Delivery;
+import com.livraison.entity.Tour;
+import com.livraison.entity.enums.StatusLivraison;
 import com.livraison.mapper.DeliveryMapper;
 import com.livraison.repository.DeliveryRepository;
+import com.livraison.repository.TourRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
     private final DeliveryMapper deliveryMapper;
+    private final TourRepository tourRepository;
 
     @Override
     public List<DeliveryDTO> getAllDeliveries() {
@@ -36,7 +40,19 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     public DeliveryDTO createDelivery(DeliveryDTO deliveryDTO) {
         Delivery delivery = deliveryMapper.toEntity(deliveryDTO);
-        return deliveryMapper.toDTO(deliveryRepository.save(delivery));
+
+        if (deliveryDTO.getTourId() != null) {
+            Tour tour = tourRepository.findById(deliveryDTO.getTourId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Tour not found with id " + deliveryDTO.getTourId()
+                    ));
+            delivery.setTour(tour);
+        } else {
+            delivery.setTour(null);
+        }
+
+        Delivery saved = deliveryRepository.save(delivery);
+        return deliveryMapper.toDTO(saved);
     }
 
     @Override
@@ -53,16 +69,33 @@ public class DeliveryServiceImpl implements DeliveryService {
         existing.setStatus(deliveryDTO.getStatus());
 
         if (deliveryDTO.getTourId() != null) {
-            existing.getTour().setId(deliveryDTO.getTourId());
+            Tour tour = tourRepository.findById(deliveryDTO.getTourId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Tour not found with id " + deliveryDTO.getTourId()
+                    ));
+            existing.setTour(tour);
         } else {
             existing.setTour(null);
         }
 
+        Delivery updated = deliveryRepository.save(existing);
+        return deliveryMapper.toDTO(updated);
+    }
+    @Override
+    public DeliveryDTO updateStatus(Long id, StatusLivraison status) {
+        Delivery existing = deliveryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Delivery not found with id " + id));
+
+        existing.setStatus(status);
         return deliveryMapper.toDTO(deliveryRepository.save(existing));
     }
 
+
     @Override
     public void deleteDelivery(Long id) {
-        deliveryRepository.deleteById(id);
+        Delivery existing = deliveryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Delivery not found with id " + id));
+        deliveryRepository.delete(existing);
     }
+    
 }
