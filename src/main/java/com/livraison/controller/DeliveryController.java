@@ -1,6 +1,7 @@
 package com.livraison.controller;
 
 import com.livraison.dto.DeliveryDTO;
+import com.livraison.dto.StatusUpdateRequest;
 import com.livraison.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,4 +41,9 @@ public class DeliveryController {
         deliveryService.deleteDelivery(id);
         return ResponseEntity.noContent().build();
     }
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<DeliveryDTO> updateStatus(@PathVariable Long id, @RequestBody StatusUpdateRequest request) {
+        return ResponseEntity.ok(deliveryService.updateStatus(id, request.getStatus()));
+    }
+
 }
