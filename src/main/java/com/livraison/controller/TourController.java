@@ -1,6 +1,9 @@
 package com.livraison.controller;
 
 import com.livraison.dto.TourDTO;
+import com.livraison.optimizer.ClarkeWrightOptimizer;
+import com.livraison.optimizer.NearestNeighborOptimizer;
+import com.livraison.optimizer.TourOptimizer;
 import com.livraison.service.TourService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,4 +49,31 @@ public class TourController {
         tourService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/optimize")
+    public TourDTO optimizeTour(
+            @PathVariable Long id,
+            @RequestParam(name = "algorithm", defaultValue = "nearest") String algorithm
+    ) {
+        TourOptimizer optimizer;
+
+        switch (algorithm.toLowerCase()) {
+            case "clarke":
+            case "clarkewright":
+                optimizer = new ClarkeWrightOptimizer();
+                break;
+            case "nearest":
+            default:
+                optimizer = new NearestNeighborOptimizer();
+                break;
+        }
+
+        return tourService.optimizeTour(id, optimizer);
+    }
+
+    @GetMapping("/{id}/distance")
+    public double getTotalDistance(@PathVariable Long id) {
+        return tourService.getTotalDistance(id);
+    }
+
 }
