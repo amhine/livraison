@@ -5,12 +5,10 @@ import com.livraison.entity.Vehicle;
 import com.livraison.mapper.VehicleMapper;
 import com.livraison.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
 @RequiredArgsConstructor
 public class VehicleServiceImpl implements VehicleService {
 

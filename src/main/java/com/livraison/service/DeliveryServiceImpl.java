@@ -9,12 +9,10 @@ import com.livraison.repository.DeliveryRepository;
 import com.livraison.repository.TourRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
 @RequiredArgsConstructor
 public class DeliveryServiceImpl implements DeliveryService {
 

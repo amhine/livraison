@@ -5,7 +5,7 @@ import com.livraison.entity.Warehouses;
 
 public class WarehouseMapper {
 
-    public static WarehouseDTO toDTO(Warehouses warehouse) {
+    public WarehouseDTO toDTO(Warehouses warehouse) {
         if (warehouse == null) return null;
         return WarehouseDTO.builder()
                 .id(warehouse.getId())

@@ -2,29 +2,25 @@ package com.livraison.service;
 
 import com.livraison.dto.WarehouseDTO;
 import com.livraison.entity.Warehouses;
+import com.livraison.mapper.WarehouseMapper;
 import com.livraison.repository.WarehouseRepository;
-import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
 public class WarehouseServiceImpl implements WarehouseService {
 
     private final WarehouseRepository warehouseRepository;
+    private final WarehouseMapper warehouseMapper;
 
-    public WarehouseServiceImpl(WarehouseRepository warehouseRepository) {
+    public WarehouseServiceImpl(WarehouseRepository warehouseRepository, WarehouseMapper warehouseMapper) {
         this.warehouseRepository = warehouseRepository;
+        this.warehouseMapper = warehouseMapper;
     }
 
     @Override
     public WarehouseDTO createWarehouse(WarehouseDTO dto) {
-        Warehouses warehouse = new Warehouses();
-        warehouse.setName(dto.getName());
-        warehouse.setAddress(dto.getAddress());
-        warehouse.setLatitude(dto.getLatitude());
-        warehouse.setLongitude(dto.getLongitude());
-        warehouse.setHeureOuverture(dto.getHeureOuverture());
-        warehouse.setHeureFermeture(dto.getHeureFermeture());
+        Warehouses warehouse = warehouseMapper.toEntity(dto);
         warehouseRepository.save(warehouse);
         dto.setId(warehouse.getId());
         return dto;
@@ -51,31 +47,15 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     public WarehouseDTO getWarehouseById(Long id) {
-        Warehouses warehouse = warehouseRepository.findById(id)
+        return warehouseRepository.findById(id)
+                .map(warehouseMapper::toDTO)
                 .orElseThrow(() -> new RuntimeException("Warehouse not found"));
-        return new WarehouseDTO(
-                warehouse.getId(),
-                warehouse.getName(),
-                warehouse.getAddress(),
-                warehouse.getLatitude(),
-                warehouse.getLongitude(),
-                warehouse.getHeureOuverture(),
-                warehouse.getHeureFermeture()
-        );
     }
 
     @Override
     public List<WarehouseDTO> getAllWarehouses() {
         return warehouseRepository.findAll().stream()
-                .map(w -> new WarehouseDTO(
-                        w.getId(),
-                        w.getName(),
-                        w.getAddress(),
-                        w.getLatitude(),
-                        w.getLongitude(),
-                        w.getHeureOuverture(),
-                        w.getHeureFermeture()
-                ))
+                .map(warehouseMapper::toDTO)
                 .collect(Collectors.toList());
     }
 }

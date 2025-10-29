@@ -1,17 +1,16 @@
 package com.livraison.service;
 
-
 import com.livraison.dto.TourDTO;
 import com.livraison.entity.*;
 import com.livraison.mapper.TourMapper;
+import com.livraison.optimizer.TourOptimizer;
 import com.livraison.repository.*;
-import org.springframework.stereotype.Service;
+import com.livraison.util.DistanceUtils;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service
 public class TourServiceImpl implements TourService {
 
     private final TourRepository tourRepository;
@@ -76,4 +75,44 @@ public class TourServiceImpl implements TourService {
     public void delete(Long id) {
         tourRepository.deleteById(id);
     }
+
+    @Override
+    public TourDTO optimizeTour(Long tourId, TourOptimizer optimizer) {
+        Tour tour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new IllegalArgumentException("Tour non trouvé"));
+
+        List<Delivery> optimizedDeliveries = optimizer.calculateOptimalTour(
+                tour.getWarehouses(), tour.getDeliveries()
+        );
+        tour.setDeliveries(optimizedDeliveries);
+
+        Tour savedTour = tourRepository.save(tour);
+        return tourMapper.toDTO(savedTour);
+    }
+
+
+    @Override
+    public double getTotalDistance(Long tourId) {
+        Tour tour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new IllegalArgumentException("Tour non trouvé"));
+
+        List<Delivery> deliveries = tour.getDeliveries();
+        double distance = 0.0;
+        double currentLat = tour.getWarehouses().getLatitude();
+        double currentLon = tour.getWarehouses().getLongitude();
+
+        for (Delivery d : deliveries) {
+            distance += DistanceUtils.calculateDistance(currentLat, currentLon, d.getLatitude(), d.getLongitude());
+            currentLat = d.getLatitude();
+            currentLon = d.getLongitude();
+        }
+
+        // retour au dépôt
+        distance += DistanceUtils.calculateDistance(currentLat, currentLon,
+                tour.getWarehouses().getLatitude(), tour.getWarehouses().getLongitude());
+
+        return distance;
+    }
+
+
 }
