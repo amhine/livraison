@@ -6,6 +6,5 @@ import com.livraison.entity.Warehouses;
 import java.util.List;
 
 public interface TourOptimizer {
-    List<Delivery> calculateOptimalTour(Warehouses warehouse, List<Delivery> deliveries);
-    double calculateTotalDistance(Warehouses warehouse, List<Delivery> orderedDeliveries);
+    List<Delivery> optimize(Warehouses warehouse, List<Delivery> deliveries);
 }
