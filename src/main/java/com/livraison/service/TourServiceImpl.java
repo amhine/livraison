@@ -6,6 +6,8 @@ import com.livraison.mapper.TourMapper;
 import com.livraison.optimizer.TourOptimizer;
 import com.livraison.repository.*;
 import com.livraison.util.DistanceCalculator;
+import com.livraison.entity.enums.OptimizerType;
+import com.livraison.dto.OptimizeTourRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -76,44 +78,135 @@ public class TourServiceImpl implements TourService {
         tourRepository.deleteById(id);
     }
 
-    @Override
-    public TourDTO optimizeTour(Long tourId, TourOptimizer optimizer) {
-        Tour tour = tourRepository.findById(tourId)
-                .orElseThrow(() -> new IllegalArgumentException("Tour non trouvé"));
 
-        List<Delivery> optimizedDeliveries = optimizer.optimize(
-                tour.getWarehouses(), tour.getDeliveries()
-        );
 
-        tour.setDeliveries(optimizedDeliveries);
-
-        Tour savedTour = tourRepository.save(tour);
-        return tourMapper.toDTO(savedTour);
+    public double getTotalDistanceAfterOptimization(Long id, TourOptimizer optimizer) {
+        TourDTO optimized = optimizeTour(id, optimizer);
+        return optimized.getDistanceTotale();
     }
 
+    @Override
+    public TourDTO optimizeTour(Long tourId, TourOptimizer optimizer) {
+        Optional<Tour> optTour = tourRepository.findById(tourId);
+        if (optTour.isEmpty()) {
+            return null;
+        }
+
+        Tour tour = optTour.get();
+        Warehouses warehouse = tour.getWarehouses();
+        List<Delivery> deliveries = tour.getDeliveries();
+
+        if (warehouse == null || deliveries == null || deliveries.isEmpty()) {
+            // Rien à optimiser
+            tour.setDistanceTotale(0D);
+            tour.setOptimizerUsed(resolveOptimizerType(optimizer));
+            Tour saved = tourRepository.save(tour);
+            return tourMapper.toDTO(saved);
+        }
+
+        // Calculer l'ordre optimisé
+        List<Delivery> ordered = optimizer.optimize(warehouse, deliveries);
+
+        // Ré-associer l'ordre et la relation propriétaire
+        for (Delivery d : ordered) {
+            d.setTour(tour);
+        }
+        tour.setDeliveries(ordered);
+
+        // Mettre à jour la distance totale
+        double total = computeTotalDistance(warehouse, ordered);
+        tour.setDistanceTotale(total);
+        tour.setOptimizerUsed(resolveOptimizerType(optimizer));
+
+        Tour saved = tourRepository.save(tour);
+        return tourMapper.toDTO(saved);
+    }
 
     @Override
     public double getTotalDistance(Long tourId) {
-        Tour tour = tourRepository.findById(tourId)
-                .orElseThrow(() -> new IllegalArgumentException("Tour non trouvé"));
-
-        List<Delivery> deliveries = tour.getDeliveries();
-        double distance = 0.0;
-        double currentLat = tour.getWarehouses().getLatitude();
-        double currentLon = tour.getWarehouses().getLongitude();
-
-        for (Delivery d : deliveries) {
-            distance += DistanceCalculator.calculateDistance(currentLat, currentLon, d.getLatitude(), d.getLongitude());
-            currentLat = d.getLatitude();
-            currentLon = d.getLongitude();
+        Optional<Tour> optTour = tourRepository.findById(tourId);
+        if (optTour.isEmpty()) {
+            return 0D;
         }
-
-        // retour au dépôt
-        distance += DistanceCalculator.calculateDistance(currentLat, currentLon,
-                tour.getWarehouses().getLatitude(), tour.getWarehouses().getLongitude());
-
-        return distance;
+        Tour tour = optTour.get();
+        Warehouses warehouse = tour.getWarehouses();
+        List<Delivery> ordered = tour.getDeliveries();
+        if (warehouse == null || ordered == null || ordered.isEmpty()) {
+            return 0D;
+        }
+        return computeTotalDistance(warehouse, ordered);
     }
 
+    @Override
+    public TourDTO createAndOptimize(OptimizeTourRequest req, TourOptimizer optimizer) {
+        Vehicle vehicle = vehicleRepository.findById(req.getVehicleId()).orElse(null);
+        Warehouses warehouse = warehouseRepository.findById(req.getWarehouseId()).orElse(null);
+        List<Delivery> deliveries = req.getDeliveryIds() != null ?
+                deliveryRepository.findAllById(req.getDeliveryIds()) : java.util.Collections.emptyList();
+
+        Tour toCreate = Tour.builder()
+                .date(req.getDate())
+                .vehicle(vehicle)
+                .warehouses(warehouse)
+                .deliveries(deliveries)
+                .build();
+
+        if (warehouse != null && deliveries != null && !deliveries.isEmpty()) {
+            List<Delivery> ordered = optimizer.optimize(warehouse, deliveries);
+            for (Delivery d : ordered) {
+                d.setTour(toCreate);
+            }
+            toCreate.setDeliveries(ordered);
+            double total = computeTotalDistance(warehouse, ordered);
+            toCreate.setDistanceTotale(total);
+            toCreate.setOptimizerUsed(resolveOptimizerType(optimizer));
+        } else {
+            toCreate.setDistanceTotale(0D);
+            toCreate.setOptimizerUsed(resolveOptimizerType(optimizer));
+        }
+
+        Tour saved = tourRepository.save(toCreate);
+        return tourMapper.toDTO(saved);
+    }
+
+    private OptimizerType resolveOptimizerType(TourOptimizer optimizer) {
+        if (optimizer instanceof com.livraison.optimizer.NearestNeighborOptimizer) {
+            return OptimizerType.plus_proche_voisin;
+        }
+        return OptimizerType.clarke_et_wright;
+    }
+
+    private double computeTotalDistance(Warehouses warehouse, List<Delivery> sequence) {
+        double total = 0D;
+        if (sequence == null || sequence.isEmpty() || warehouse == null) {
+            return total;
+        }
+
+        // Départ entrepôt -> première livraison
+        Delivery first = sequence.get(0);
+        total += DistanceCalculator.calculateDistance(
+                warehouse.getLatitude(), warehouse.getLongitude(),
+                first.getLatitude(), first.getLongitude()
+        );
+
+        // Distances entre livraisons successives
+        for (int i = 0; i < sequence.size() - 1; i++) {
+            Delivery a = sequence.get(i);
+            Delivery b = sequence.get(i + 1);
+            total += DistanceCalculator.calculateDistance(
+                    a.getLatitude(), a.getLongitude(),
+                    b.getLatitude(), b.getLongitude()
+            );
+        }
+
+        // Dernière livraison -> retour entrepôt
+        Delivery last = sequence.get(sequence.size() - 1);
+        total += DistanceCalculator.calculateDistance(
+                last.getLatitude(), last.getLongitude(),
+                warehouse.getLatitude(), warehouse.getLongitude()
+        );
+
+        return total;
+    }
 
 }

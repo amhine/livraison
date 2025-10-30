@@ -12,7 +12,6 @@ public class ClarkeWrightOptimizer implements TourOptimizer {
 
     @Override
     public List<Delivery> optimize(Warehouses warehouse, List<Delivery> deliveries) {
-        // Étape 1 : Calcul des économies (savings)
         record Saving(Delivery i, Delivery j, double value) {}
 
         List<Saving> savings = new ArrayList<>();
@@ -36,10 +35,7 @@ public class ClarkeWrightOptimizer implements TourOptimizer {
             }
         }
 
-        // Étape 2 : Trier les économies décroissantes
         savings.sort(Comparator.comparingDouble(Saving::value).reversed());
-
-        // Étape 3 : Construction du tour simplifié
         List<Delivery> result = new ArrayList<>();
         for (Saving s : savings) {
             if (!result.contains(s.i())) result.add(s.i());
