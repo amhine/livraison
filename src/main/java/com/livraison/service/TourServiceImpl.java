@@ -5,7 +5,7 @@ import com.livraison.entity.*;
 import com.livraison.mapper.TourMapper;
 import com.livraison.optimizer.TourOptimizer;
 import com.livraison.repository.*;
-import com.livraison.util.DistanceUtils;
+import com.livraison.util.DistanceCalculator;
 
 import java.util.List;
 import java.util.Optional;
@@ -81,9 +81,10 @@ public class TourServiceImpl implements TourService {
         Tour tour = tourRepository.findById(tourId)
                 .orElseThrow(() -> new IllegalArgumentException("Tour non trouvé"));
 
-        List<Delivery> optimizedDeliveries = optimizer.calculateOptimalTour(
+        List<Delivery> optimizedDeliveries = optimizer.optimize(
                 tour.getWarehouses(), tour.getDeliveries()
         );
+
         tour.setDeliveries(optimizedDeliveries);
 
         Tour savedTour = tourRepository.save(tour);
@@ -102,13 +103,13 @@ public class TourServiceImpl implements TourService {
         double currentLon = tour.getWarehouses().getLongitude();
 
         for (Delivery d : deliveries) {
-            distance += DistanceUtils.calculateDistance(currentLat, currentLon, d.getLatitude(), d.getLongitude());
+            distance += DistanceCalculator.calculateDistance(currentLat, currentLon, d.getLatitude(), d.getLongitude());
             currentLat = d.getLatitude();
             currentLon = d.getLongitude();
         }
 
         // retour au dépôt
-        distance += DistanceUtils.calculateDistance(currentLat, currentLon,
+        distance += DistanceCalculator.calculateDistance(currentLat, currentLon,
                 tour.getWarehouses().getLatitude(), tour.getWarehouses().getLongitude());
 
         return distance;
