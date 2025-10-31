@@ -161,7 +161,17 @@ L'application démarre sur : `http://localhost:port
 
 ## 📸 Captures d'écran
 
-Les captures suivantes sont disponibles dans `/docs/screenshots/` :
+<img width="1461" height="414" alt="image" src="https://github.com/user-attachments/assets/ae024882-42cd-4322-9cf7-83fe177d1366" />
+<img width="1476" height="669" alt="image" src="https://github.com/user-attachments/assets/6e708dfb-5f52-428c-abb6-4b6683134fc2" />
+<img width="1495" height="718" alt="image" src="https://github.com/user-attachments/assets/181c6b95-55d8-4433-95fe-45473d1d4852" />
+<img width="1494" height="660" alt="image" src="https://github.com/user-attachments/assets/c1adfd81-6dcc-4c79-8dfb-eefafabab67a" />
+<img width="530" height="889" alt="image" src="https://github.com/user-attachments/assets/42272256-e339-4a2b-984a-6ec800ef119f" />
+
+GET http://localhost:8083/api/warehouses
+<img width="497" height="534" alt="image" src="https://github.com/user-attachments/assets/8a34f6b1-6224-440c-b7f5-3581fd304b7c" />
+
+
+
 
 1. **Swagger UI** - Documentation API
 2. **Postman** - Tests d'endpoints
