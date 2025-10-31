@@ -27,7 +27,6 @@ class DeliveryServiceImplTest {
     void setup() {
         deliveryRepository = mock(DeliveryRepository.class);
         tourRepository = mock(TourRepository.class);
-        // Simple identity-like mapper for the purpose of the unit test
         deliveryMapper = new DeliveryMapper() {
             @Override public DeliveryDTO toDTO(Delivery d) {
                 DeliveryDTO dto = new DeliveryDTO();
