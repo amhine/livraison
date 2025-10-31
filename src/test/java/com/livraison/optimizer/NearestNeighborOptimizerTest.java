@@ -26,6 +26,6 @@ class NearestNeighborOptimizerTest {
 
         assertEquals(3, ordered.size());
         assertTrue(ordered.containsAll(List.of(d1, d2, d3)));
-        assertEquals(d3, ordered.get(0)); // roughly nearest to warehouse among the three
+        assertEquals(d3, ordered.get(0));
     }
 }

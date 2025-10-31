@@ -13,13 +13,10 @@ public interface TourService {
     TourDTO update(Long id, TourDTO dto);
     void delete(Long id);
     
-    // Optimiser un tour existant et retourner le TourDTO mis à jour
     TourDTO optimizeTour(Long id, TourOptimizer optimizer);
     
-    // Calculer la distance totale selon l'ordre actuel des livraisons d'un tour
     double getTotalDistance(Long id);
     double getTotalDistanceAfterOptimization(Long id, TourOptimizer optimizer);
 
-    // Créer un tour à partir d'un set de livraisons et l'optimiser
     TourDTO createAndOptimize(OptimizeTourRequest req, TourOptimizer optimizer);
 }

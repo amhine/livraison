@@ -97,23 +97,19 @@ public class TourServiceImpl implements TourService {
         List<Delivery> deliveries = tour.getDeliveries();
 
         if (warehouse == null || deliveries == null || deliveries.isEmpty()) {
-            // Rien à optimiser
             tour.setDistanceTotale(0D);
             tour.setOptimizerUsed(resolveOptimizerType(optimizer));
             Tour saved = tourRepository.save(tour);
             return tourMapper.toDTO(saved);
         }
 
-        // Calculer l'ordre optimisé
         List<Delivery> ordered = optimizer.optimize(warehouse, deliveries);
 
-        // Ré-associer l'ordre et la relation propriétaire
         for (Delivery d : ordered) {
             d.setTour(tour);
         }
         tour.setDeliveries(ordered);
 
-        // Mettre à jour la distance totale
         double total = computeTotalDistance(warehouse, ordered);
         tour.setDistanceTotale(total);
         tour.setOptimizerUsed(resolveOptimizerType(optimizer));
@@ -182,14 +178,12 @@ public class TourServiceImpl implements TourService {
             return total;
         }
 
-        // Départ entrepôt -> première livraison
         Delivery first = sequence.get(0);
         total += DistanceCalculator.calculateDistance(
                 warehouse.getLatitude(), warehouse.getLongitude(),
                 first.getLatitude(), first.getLongitude()
         );
 
-        // Distances entre livraisons successives
         for (int i = 0; i < sequence.size() - 1; i++) {
             Delivery a = sequence.get(i);
             Delivery b = sequence.get(i + 1);
@@ -199,7 +193,6 @@ public class TourServiceImpl implements TourService {
             );
         }
 
-        // Dernière livraison -> retour entrepôt
         Delivery last = sequence.get(sequence.size() - 1);
         total += DistanceCalculator.calculateDistance(
                 last.getLatitude(), last.getLongitude(),
