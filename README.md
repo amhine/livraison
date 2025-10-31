@@ -1,181 +1,195 @@
-# Système de Gestion Optimisée de Tournées de Livraison
 
+
+# 🚚 Système de Gestion Optimisée des Tournées de Livraison
 
 ## 🎯 Présentation
 
-Application **Spring Boot** de gestion et d'optimisation de tournées de livraison permettant de minimiser les distances parcourues tout en respectant les contraintes des véhicules.
+Le **Système de Gestion Optimisée de Tournées de Livraison** est une application **Spring Boot** permettant de planifier, gérer et optimiser les trajets de livraison afin de **réduire les distances parcourues** et **améliorer l’efficacité logistique**.
+Elle s’appuie sur deux algorithmes d’optimisation afin de comparer leurs performances.
 
 ### Objectifs
-- Gérer une flotte de véhicules et des entrepôts
-- Planifier et optimiser les tournées de livraison
-- Comparer deux algorithmes d'optimisation : **Nearest Neighbor** et **Clarke & Wright**
-- Fournir une API REST complète pour toutes les opérations
+
+* Gérer la flotte de véhicules et les entrepôts
+* Planifier automatiquement les tournées de livraison
+* Comparer deux méthodes d’optimisation : **Nearest Neighbor** et **Clarke & Wright**
+* Exposer toutes les fonctionnalités via une **API REST complète et documentée**
 
 ---
 
-## ✨ Fonctionnalités
+## ✨ Fonctionnalités principales
 
-### Gestion des entités
-- **CRUD complet** pour : Entrepôts, Véhicules, Livraisons, Tournées
-- Statuts de livraison : `PENDING`, `IN_TRANSIT`, `DELIVERED`, `FAILED`
-- Gestion des contraintes véhicules (poids, volume, capacité)
+### 🔹 Gestion des entités
 
-### Optimisation des tournées
-- **Nearest Neighbor** : Algorithme rapide, solution locale
-- **Clarke & Wright** : Algorithme des économies, meilleure solution globale
-- Calcul automatique des distances (formule Haversine)
-- Validation des contraintes en temps réel
+* **CRUD complet** pour les : Entrepôts, Véhicules, Livraisons et Tournées
+* Gestion des statuts de livraison : `PENDING`, `IN_TRANSIT`, `DELIVERED`, `FAILED`
+* Prise en compte des **contraintes des véhicules** (poids, volume, capacité)
 
----
+### 🔹 Optimisation des tournées
 
-## 🛠️ Technologies
-
-| Technologie | Version | Usage |
-|------------|---------|-------|
-| Java | 17+ | Langage principal |
-| Spring Boot | 3.3.5 | Framework |
-| Spring Data JPA | - | Accès données |
-| H2 Database | - | Base de données |
-| Maven | 3.6+ | Gestionnaire de build |
-| Lombok | - | Réduction code boilerplate |
-| Swagger/OpenAPI | - | Documentation API |
-| JUnit 5 | - | Tests unitaires |
+* **Nearest Neighbor** : algorithme rapide, donnant une solution locale
+* **Clarke & Wright** : algorithme des économies, produisant une solution plus optimale
+* Calcul automatique des distances via la **formule de Haversine**
+* **Validation en temps réel** des contraintes de capacité des véhicules
 
 ---
 
-## 🏗️ Architecture
+## 🛠️ Technologies utilisées
 
-### Structure du projet
+| Technologie           | Version | Utilisation                     |
+| --------------------- | ------- | ------------------------------- |
+| **Java**              | 17+     | Langage principal               |
+| **Spring Boot**       | 3.3.5   | Framework backend               |
+| **Spring Data JPA**   | -       | Gestion et accès aux données    |
+| **H2 Database**       | -       | Base de données en mémoire      |
+| **Maven**             | 3.6+    | Gestion de dépendances et build |
+| **Lombok**            | -       | Réduction du code répétitif     |
+| **Swagger / OpenAPI** | -       | Documentation de l’API          |
+| **JUnit 5**           | -       | Tests unitaires                 |
+
+---
+
+## 🧩 Architecture du projet
+
+### 📁 Structure
+
 ```
 src/main/java/com/livraison/
-├── config/              # Configuration Spring & beans
-├── controller/          # REST endpoints
-├── dto/                 # Data Transfer Objects
-├── entity/              # Entités JPA
-├── mapper/              # Conversion DTO ↔ Entity
-├── optimizer/           # Algorithmes d'optimisation
-├── repository/          # Accès base de données
-├── service/             # Logique métier
-└── util/                # Utilitaires (calcul distance)
+├── config/           # Configuration Spring & beans
+├── controller/       # Endpoints REST
+├── dto/              # Objets de transfert de données
+├── entity/           # Entités JPA
+├── mapper/           # Mapping DTO ↔ Entity
+├── optimizer/        # Algorithmes d'optimisation
+├── repository/       # Accès à la base de données
+├── service/          # Logique métier
+└── util/             # Fonctions utilitaires (calculs de distance)
 
 src/main/resources/
-├── application.properties    # Configuration app
-├── applicationContext.xml    # Configuration beans
-└── data.sql                  # Données de test
+├── application.properties   # Configuration principale
+├── applicationContext.xml   # Configuration complémentaire (beans)
+└── data.sql                 # Jeu de données de test
 ```
 
-### Couches applicatives
-1. **Controller** : Exposition REST API
-2. **Service** : Logique métier et orchestration
-3. **Repository** : Accès base de données (Spring Data JPA)
-4. **Optimizer** : Stratégies d'optimisation (pattern Strategy)
+### 🧠 Couches applicatives
+
+1. **Controller** → Expose les endpoints REST
+2. **Service** → Contient la logique métier et les règles d’optimisation
+3. **Repository** → Interagit avec la base de données via Spring Data JPA
+4. **Optimizer** → Implémente les stratégies de calcul (pattern *Strategy*)
 
 ---
 
-## 📦 Installation
+## ⚙️ Installation et exécution
 
-### Prérequis
-- **JDK 17+** installé avec `JAVA_HOME` configuré
-- **Maven 3.6+**
-- **Git**
-- **IDE** (IntelliJ IDEA recommandé)
-- **Postman** (pour tester l'API)
+### 🔧 Prérequis
 
-### Étapes d'installation
+* **JDK 17+** avec `JAVA_HOME` configuré
+* **Maven 3.6+**
+* **Git**
+* **IDE** (IntelliJ IDEA recommandé)
+* **Postman** (pour tester l’API)
+
+### 🚀 Étapes d’installation
 
 1. **Cloner le projet**
+
 ```bash
 git clone https://github.com/amhine/livraison.git
 cd livraison
 ```
 
 2. **Compiler le projet**
+
 ```bash
 mvn clean install
 ```
 
-3. **Lancer l'application**
+3. **Lancer l’application**
+
 ```bash
 ./mvnw spring-boot:run
 ```
 
-L'application démarre sur : `http://localhost:port
-
-
-### Contraintes véhicules
-
-| Type | Poids max | Volume max | Livraisons max |
-|------|-----------|------------|----------------|
-| BIKE | 50 kg | 0.5 m³ | 15 |
-| VAN | 1000 kg | 8 m³ | 50 |
-| TRUCK | 5000 kg | 40 m³ | 100 |
+L’application démarre par défaut sur :
+👉 `http://localhost:8083`
 
 ---
 
-## 🌐 API REST
+## 🚗 Contraintes des véhicules
 
-**Base URL** : `http://localhost:/api`
+| Type      | Poids max | Volume max | Livraisons max |
+| --------- | --------- | ---------- | -------------- |
+| **BIKE**  | 50 kg     | 0.5 m³     | 15             |
+| **VAN**   | 1000 kg   | 8 m³       | 50             |
+| **TRUCK** | 5000 kg   | 40 m³      | 100            |
 
-### Entrepôts (Warehouses)
+---
 
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| GET | `/api/warehouses` | Liste tous les entrepôts |
-| GET | `/api/warehouses/{id}` | Détails d'un entrepôt |
-| POST | `/api/warehouses` | Créer un entrepôt |
-| PUT | `/api/warehouses/{id}` | Modifier un entrepôt |
-| DELETE | `/api/warehouses/{id}` | Supprimer un entrepôt |
+## 🌐 Documentation API REST
 
-### Véhicules (Vehicles)
+**Base URL** : `http://localhost:8083/api`
 
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| GET | `/api/vehicles` | Liste tous les véhicules |
-| GET | `/api/vehicles/{id}` | Détails d'un véhicule |
-| POST | `/api/vehicles` | Créer un véhicule |
-| PUT | `/api/vehicles/{id}` | Modifier un véhicule |
-| DELETE | `/api/vehicles/{id}` | Supprimer un véhicule |
+### 🏢 Entrepôts (Warehouses)
 
-### Livraisons (Deliveries)
+| Méthode | Endpoint           | Description            |
+| ------- | ------------------ | ---------------------- |
+| GET     | `/warehouses`      | Liste des entrepôts    |
+| GET     | `/warehouses/{id}` | Détails d’un entrepôt  |
+| POST    | `/warehouses`      | Création d’un entrepôt |
+| PUT     | `/warehouses/{id}` | Mise à jour            |
+| DELETE  | `/warehouses/{id}` | Suppression            |
 
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| GET | `/api/deliveries` | Liste toutes les livraisons |
-| GET | `/api/deliveries/{id}` | Détails d'une livraison |
-| POST | `/api/deliveries` | Créer une livraison |
-| PUT | `/api/deliveries/{id}` | Modifier une livraison |
-| PATCH | `/api/deliveries/{id}/status` | Changer le statut |
-| DELETE | `/api/deliveries/{id}` | Supprimer une livraison |
+### 🚙 Véhicules (Vehicles)
 
-### Tournées (Tours)
+| Méthode | Endpoint         | Description           |
+| ------- | ---------------- | --------------------- |
+| GET     | `/vehicles`      | Liste des véhicules   |
+| GET     | `/vehicles/{id}` | Détails d’un véhicule |
+| POST    | `/vehicles`      | Ajout d’un véhicule   |
+| PUT     | `/vehicles/{id}` | Mise à jour           |
+| DELETE  | `/vehicles/{id}` | Suppression           |
 
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| GET | `/api/tours` | Liste toutes les tournées |
-| GET | `/api/tours/{id}` | Détails d'une tournée |
-| POST | `/api/tours` | Créer une tournée |
-| POST | `/api/tours/optimize` | Optimiser une tournée |
-| GET | `/api/tours/{id}/distance` | Distance totale |
-| DELETE | `/api/tours/{id}` | Supprimer une tournée |
+### 📦 Livraisons (Deliveries)
+
+| Méthode | Endpoint                  | Description             |
+| ------- | ------------------------- | ----------------------- |
+| GET     | `/deliveries`             | Liste des livraisons    |
+| GET     | `/deliveries/{id}`        | Détails d’une livraison |
+| POST    | `/deliveries`             | Création                |
+| PUT     | `/deliveries/{id}`        | Modification            |
+| PATCH   | `/deliveries/{id}/status` | Changement de statut    |
+| DELETE  | `/deliveries/{id}`        | Suppression             |
+
+### 🗺️ Tournées (Tours)
+
+| Méthode | Endpoint               | Description                |
+| ------- | ---------------------- | -------------------------- |
+| GET     | `/tours`               | Liste des tournées         |
+| GET     | `/tours/{id}`          | Détails d’une tournée      |
+| POST    | `/tours`               | Création                   |
+| POST    | `/tours/optimize`      | Optimisation d’une tournée |
+| GET     | `/tours/{id}/distance` | Distance totale            |
+| DELETE  | `/tours/{id}`          | Suppression                |
+
+---
+
+## 📸 Illustrations
+
+| **Section**             | **Aperçu**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Swagger UI**          | <p align="center"><img width="1461" height="414" src="https://github.com/user-attachments/assets/ae024882-42cd-4322-9cf7-83fe177d1366" /><br><img width="1476" height="669" src="https://github.com/user-attachments/assets/6e708dfb-5f52-428c-abb6-4b6683134fc2" /><br><img width="1495" height="718" src="https://github.com/user-attachments/assets/181c6b95-55d8-4433-95fe-45473d1d4852" /><br><img width="1494" height="660" src="https://github.com/user-attachments/assets/c1adfd81-6dcc-4c79-8dfb-eefafabab67a" /></p> |
+| **Tests Postman**       | <p align="center"><img width="497" height="534" src="https://github.com/user-attachments/assets/2a0de1b5-7c01-490f-8b8f-8d3a09e7c96f" /></p>                                                                                                                                                                                                                                                                                                                                                                                   |
+| **Structure du projet** |  <p align="center"><img width="530" height="889" src="https://github.com/user-attachments/assets/42272256-e339-4a2b-984a-6ec800ef119f" /></p>                                                                                                                                                                                                                                      |
+| **Schéma UML**          | <img width="1311" height="644" alt="Capture d’écran du 2025-10-31 09-31-26" src="https://github.com/user-attachments/assets/574ddd8d-49d2-4d46-8c21-afb3e2858417" />
+                                                                                                                                                                                                                                                                                                                                                                                   |
 
 
-## 📸 Captures d'écran
+---
 
-<img width="1461" height="414" alt="image" src="https://github.com/user-attachments/assets/ae024882-42cd-4322-9cf7-83fe177d1366" />
-<img width="1476" height="669" alt="image" src="https://github.com/user-attachments/assets/6e708dfb-5f52-428c-abb6-4b6683134fc2" />
-<img width="1495" height="718" alt="image" src="https://github.com/user-attachments/assets/181c6b95-55d8-4433-95fe-45473d1d4852" />
-<img width="1494" height="660" alt="image" src="https://github.com/user-attachments/assets/c1adfd81-6dcc-4c79-8dfb-eefafabab67a" />
-<img width="530" height="889" alt="image" src="https://github.com/user-attachments/assets/42272256-e339-4a2b-984a-6ec800ef119f" />
+## 🧾 Outils d’évaluation et de test
 
-GET http://localhost:8083/api/warehouses
-<img width="497" height="534" alt="image" src="https://github.com/user-attachments/assets/8a34f6b1-6224-440c-b7f5-3581fd304b7c" />
-
-
-
-
-1. **Swagger UI** - Documentation API
-2. **Postman** - Tests d'endpoints
-3. **H2 Console** - Base de données
-4. **Logs** - Optimisation en cours
-5. **Diagrammes UML** - Architecture
-
+1. **Swagger UI** – Documentation interactive de l’API
+2. **Postman** – Tests des endpoints et automatisation
+3. **H2 Console** – Consultation en temps réel de la base de données
+4. **Logs Spring Boot** – Suivi des optimisations et diagnostics
+5. **Diagrammes UML** – Vue globale de l’architecture et des relations
